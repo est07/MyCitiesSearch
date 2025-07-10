@@ -1,0 +1,39 @@
+name: CI MyCitiesSearch
+run-name : Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+
+      - name: Run Ktlint
+        run: ./gradlew ktlintCheck
+
+      - name: Create local.properties
+        run: echo "sdk.dir=$ANDROID_SDK_ROOT" > ./local.properties
+
+      - name: Run Sanity build
+        run: ./gradlew assemble
+        env:
+          ANDROID_SDK_ROOT: ${{ secrets.ANDROID_SDK_ROOT }}
