@@ -27,14 +27,14 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Run Ktlint
-        run: ./gradlew ktlintCheck
-
       - name: Setup JSON_URL_API
         run: echo "JSON_URL_API=$JSON_URL_API" > ./local.properties
 
       - name: Create local.properties
         run: echo "sdk.dir=$ANDROID_SDK_ROOT" > ./local.properties
+
+      - name: Run Ktlint
+        run: ./gradlew ktlintCheck
 
       - name: Run Sanity build
         run: ./gradlew assemble
