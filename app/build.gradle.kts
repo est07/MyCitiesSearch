@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android.application)
@@ -18,6 +19,15 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val localProperties = Properties().apply {
+            file("${rootProject.projectDir}/local.properties").inputStream().use(::load)
+        }
+        buildConfigField(
+            "String",
+            "JSON_URL_API",
+            "\"${localProperties.getProperty("JSON_URL_API")}\""
+        )
     }
 
     buildTypes {
@@ -39,6 +49,7 @@ android {
         }
     }
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -56,6 +67,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.moshi)
     implementation(libs.okhttp)
+    implementation(libs.okhttp.interceptor)
     implementation(libs.moshi.kotlin)
     implementation(libs.koin.core)
     implementation(libs.koin.android)

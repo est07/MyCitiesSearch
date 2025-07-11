@@ -1,4 +1,4 @@
-package com.example.mycitiessearch
+package com.example.mycitiessearch.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,13 +11,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.mycitiessearch.ui.theme.MyCitiesSearchTheme
+import com.example.mycitiessearch.presentation.ui.theme.MyCitiesSearchTheme
+import com.example.mycitiessearch.presentation.viewmodels.CitiesViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
+
+    private val citiesViewModel: CitiesViewModel by viewModel()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            citiesViewModel.getCitiesList()
             MyCitiesSearchTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Greeting(
