@@ -1,4 +1,4 @@
-package com.example.mycitiessearch.ui.theme
+package com.example.mycitiessearch.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

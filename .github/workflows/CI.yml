@@ -30,10 +30,14 @@ jobs:
       - name: Run Ktlint
         run: ./gradlew ktlintCheck
 
+      - name: Setup JSON_URL_API
+        run: echo "JSON_URL_API=$JSON_URL_API" > ./local.properties
+
       - name: Create local.properties
         run: echo "sdk.dir=$ANDROID_SDK_ROOT" > ./local.properties
 
       - name: Run Sanity build
         run: ./gradlew assemble
         env:
+          JSON_URL_API: ${{ secrets.JSON_URL_API }}
           ANDROID_SDK_ROOT: ${{ secrets.ANDROID_SDK_ROOT }}
