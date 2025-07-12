@@ -1,10 +1,10 @@
 package com.example.mycitiessearch.presentation.states
 
-import com.example.mycitiessearch.data.responses.CityResponse
+import com.example.mycitiessearch.domain.models.City
 
 sealed class CitiesListStates {
-    data class Success(val cities: List<CityResponse>) : CitiesListStates()
-    data object Default : CitiesListStates()// Assuming cities are represented as a list of strings
+    data class Success(val cities: List<City>) : CitiesListStates()
+    data object Default : CitiesListStates()
     data object Loading : CitiesListStates()
     data object Error : CitiesListStates()
 }

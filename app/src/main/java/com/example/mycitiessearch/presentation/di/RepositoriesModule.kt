@@ -5,5 +5,5 @@ import com.example.mycitiessearch.domain.repositories.CitiesRepository
 import org.koin.dsl.module
 
 val repositoriesModule = module {
-    factory<CitiesRepository> { CitiesRepositoryImpl(api = get()) }
+    factory<CitiesRepository> { CitiesRepositoryImpl(api = get(), citiesDao = get()) }
 }

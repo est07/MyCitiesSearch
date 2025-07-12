@@ -1,5 +1,6 @@
 package com.example.mycitiessearch.presentation.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.mycitiessearch.domain.usecases.CitiesUseCase
@@ -25,12 +26,16 @@ class CitiesViewModel(
         viewModelScope.launch {
             citiesUseCase.getCitiesList()
                 .onStart {
+                    Log.d("", "Loading cities list")
                     _citiesListState.value = CitiesListStates.Loading }
                 .catch {
+                    Log.d("", "Error")
                     _citiesListState.value = CitiesListStates.Error
                 }
                 .collect {
-                    _citiesListState.value = CitiesListStates.Success(it) }
+                    Log.d("", "Cities list: $it")
+                    _citiesListState.value = CitiesListStates.Success(it)
+                }
         }
     }
 

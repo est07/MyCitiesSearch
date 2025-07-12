@@ -10,10 +10,10 @@ data class CityResponse(
     @Json(name = "_id")
     val id: Int,
     @Json(name = "coord")
-    val coordinates: Coordinates
+    val coordinates: CoordinatesResponse
 )
 
-data class Coordinates(
+data class CoordinatesResponse(
     @Json(name = "lon")
     val lon: Double,
     @Json(name = "lat")
