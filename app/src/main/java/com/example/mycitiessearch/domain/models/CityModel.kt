@@ -4,12 +4,12 @@ import com.example.mycitiessearch.data.database.entities.CityEntity
 import com.example.mycitiessearch.data.responses.CityResponse
 
 data class CityModel(
-    val id: Int,
-    val name: String,
-    val country: String,
+    val id: Int? = 0,
+    val name: String? = "",
+    val country: String = "",
     var isFavorite:Boolean? = false,
-    val lon: Double,
-    val lat: Double
+    val lon: Double = 0.0,
+    val lat: Double = 0.0
 )
 
 fun CityResponse.toDomain() = CityModel(

@@ -1,6 +1,5 @@
 package com.example.mycitiessearch.presentation.viewmodels
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -40,15 +39,24 @@ class CitiesViewModel(
 
     var isFavoritesFilter by mutableStateOf(false)
 
-    val getLocalCities: Flow<PagingData<CityModel>> =
-        Pager(
-            config = PagingConfig(pageSize = MAX_ITEMS, prefetchDistance = PREFETCH_ITEMS),
-            pagingSourceFactory = {
-                CitiesPagingSource(
+    private var pagingSource: CitiesPagingSource? = null
+        get() {
+            if (field == null || field?.invalid == true) {
+                field = CitiesPagingSource(
                     textQuery = textQuery,
                     isFavoritesFilter = isFavoritesFilter,
                     citiesUseCase = citiesUseCase
                 )
+            }
+
+            return field
+        }
+
+    val getLocalCities: Flow<PagingData<CityModel>> =
+        Pager(
+            config = PagingConfig(pageSize = MAX_ITEMS, prefetchDistance = PREFETCH_ITEMS),
+            pagingSourceFactory = {
+                pagingSource!!
             }
         ).flow.cachedIn(viewModelScope)
 
@@ -65,5 +73,9 @@ class CitiesViewModel(
                     _citiesListState.update { CitiesListStates.Success }
                 }
         }
+    }
+
+    fun searchCities() {
+        pagingSource?.invalidate()
     }
 }
