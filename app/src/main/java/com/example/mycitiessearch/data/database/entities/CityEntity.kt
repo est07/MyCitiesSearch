@@ -17,8 +17,8 @@ data class CityEntity(
 )
 
 fun CityModel.toDatabase() = CityEntity(
-    id = id,
-    name = name,
+    id = id ?: 0,
+    name = name ?: String(),
     country = country,
     isFavorite = isFavorite?: false,
     lon = lon,
