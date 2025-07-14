@@ -1,4 +1,4 @@
-package com.example.mycitiessearch.data.apis
+package com.example.mycitiessearch.data.network.apis
 
 import com.example.mycitiessearch.data.responses.CityResponse
 import retrofit2.http.GET

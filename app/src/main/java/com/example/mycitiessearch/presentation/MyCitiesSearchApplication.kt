@@ -1,6 +1,7 @@
 package com.example.mycitiessearch.presentation
 
 import android.app.Application
+import com.example.mycitiessearch.presentation.di.databaseModule
 import com.example.mycitiessearch.presentation.di.repositoriesModule
 import com.example.mycitiessearch.presentation.di.serviceModule
 import com.example.mycitiessearch.presentation.di.useCasesModule
@@ -20,7 +21,8 @@ class MyCitiesSearchApplication : Application() {
                     serviceModule,
                     repositoriesModule,
                     useCasesModule,
-                    viewModelModule
+                    viewModelModule,
+                    databaseModule
                 )
             )
         }

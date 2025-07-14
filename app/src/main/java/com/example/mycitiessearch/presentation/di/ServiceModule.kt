@@ -1,6 +1,6 @@
 package com.example.mycitiessearch.presentation.di
 
-import com.example.mycitiessearch.data.apis.CitiesApi
+import com.example.mycitiessearch.data.network.apis.CitiesApi
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.Retrofit
