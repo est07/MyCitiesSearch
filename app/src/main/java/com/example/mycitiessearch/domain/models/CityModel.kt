@@ -3,7 +3,7 @@ package com.example.mycitiessearch.domain.models
 import com.example.mycitiessearch.data.database.entities.CityEntity
 import com.example.mycitiessearch.data.responses.CityResponse
 
-data class City(
+data class CityModel(
     val id: Int,
     val name: String,
     val country: String,
@@ -12,14 +12,14 @@ data class City(
     val lat: Double
 )
 
-fun CityResponse.toDomain() = City(
+fun CityResponse.toDomain() = CityModel(
     id = id,
     name = name,
     country = country,
     lon = coordinates.lon,
     lat = coordinates.lat
 )
-fun CityEntity.toDomain() = City(
+fun CityEntity.toDomain() = CityModel(
     id = id,
     name = name,
     country = country,

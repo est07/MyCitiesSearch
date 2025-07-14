@@ -8,7 +8,7 @@ val useCasesModule = module {
     factory {
         CitiesUseCase(
             citiesRepository = get(),
-            coroutineDispatcher = Dispatchers.IO
+            ioDispatcher = Dispatchers.IO
         )
     }
 }

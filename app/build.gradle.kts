@@ -53,6 +53,15 @@ android {
         buildConfig = true
         compose = true
     }
+    packaging {
+        resources {
+            resources {
+                excludes += "/META-INF/{AL2.0,LGPL2.1}"
+                merges += "META-INF/LICENSE.md"
+                merges += "META-INF/LICENSE-notice.md"
+            }
+        }
+    }
 }
 
 dependencies {
@@ -81,8 +90,10 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.androidx.room.runtime.android)
     ksp(libs.room.compiler)
+    implementation(libs.paging.compose)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.mockk.android)
     androidTestImplementation(libs.androidx.espresso.core)
