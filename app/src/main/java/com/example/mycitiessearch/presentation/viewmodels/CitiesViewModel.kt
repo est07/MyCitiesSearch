@@ -33,7 +33,7 @@ class CitiesViewModel(
         MutableStateFlow<CitiesListStates>(CitiesListStates.Default)
 
     val citiesListState: StateFlow<CitiesListStates>
-        get() = _citiesListState.asStateFlow()
+        get() = _citiesListState
 
     var textQuery by mutableStateOf(String())
 
@@ -64,13 +64,13 @@ class CitiesViewModel(
         viewModelScope.launch {
             citiesUseCase.getCitiesList()
                 .onStart {
-                    _citiesListState.update { CitiesListStates.Loading }
+                    _citiesListState.value = CitiesListStates.Loading
                 }
                 .catch {
-                    _citiesListState.update { CitiesListStates.Error }
+                    _citiesListState.value = CitiesListStates.Error
                 }
                 .collect {
-                    _citiesListState.update { CitiesListStates.Success }
+                    _citiesListState.value = CitiesListStates.Success
                 }
         }
     }
