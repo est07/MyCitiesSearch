@@ -1,6 +1,7 @@
 package com.example.mycitiessearch.domain.usecases
 
 import com.example.mycitiessearch.data.database.entities.toDatabase
+import com.example.mycitiessearch.domain.models.CityModel
 import com.example.mycitiessearch.domain.repositories.CitiesRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.onEach
@@ -33,5 +34,9 @@ class CitiesUseCase(
 
     suspend fun getAllFavoritesCities(limit: Int, offset: Int) = withContext(ioDispatcher) {
         citiesRepository.getAllFavoritesCities(limit, offset)
+    }
+
+    suspend fun updateCity(city: CityModel) = withContext(ioDispatcher) {
+        citiesRepository.updateCity(city.toDatabase())
     }
 }

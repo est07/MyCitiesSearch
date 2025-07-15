@@ -1,21 +1,14 @@
-package com.example.mycitiessearch.presentation
+package com.example.mycitiessearch.presentation.compose
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -24,8 +17,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -34,15 +26,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,74 +49,20 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
-import androidx.paging.PagingData
-import androidx.paging.compose.LazyPagingItems
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.mycitiessearch.R
 import com.example.mycitiessearch.domain.models.CityModel
 import com.example.mycitiessearch.presentation.ui.theme.MyCitiesSearchTheme
-import com.example.mycitiessearch.presentation.viewmodels.CitiesViewModel
-import kotlinx.coroutines.flow.flowOf
-
-@Composable
-fun CitiesRoute(citiesViewModel: CitiesViewModel, navigateToMap : (CityModel) -> Unit) {
-    val citiesDB = citiesViewModel.getLocalCities.collectAsLazyPagingItems()
-
-    CitiesListScreen(
-        cities = citiesDB,
-        searchText = citiesViewModel.textQuery,
-        isFavoritesFilter = citiesViewModel.isFavoritesFilter,
-        onSearchTextChanged = {
-            citiesViewModel.textQuery = it
-            citiesViewModel.searchCities()
-        },
-        navigateToMap = { navigateToMap(it) },
-        onFilterClicked = {}
-    )
-}
-
-@Composable
-fun CitiesListScreen(
-    cities: LazyPagingItems<CityModel>,
-    searchText: String,
-    isFavoritesFilter: Boolean,
-    onSearchTextChanged: (String) -> Unit,
-    navigateToMap: (CityModel) -> Unit,
-    onFilterClicked: () -> Unit
-) {
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            SearchToolbar(
-                searchText = searchText,
-                onSearchTextChanged = {
-                    onSearchTextChanged(it)
-                },
-                onFilterClicked = { }
-            )
-        }
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-        ) {
-            CitiesList(
-                cities = cities,
-                isFavoritesFilter = isFavoritesFilter,
-                navigateToMap = { navigateToMap(it) },
-                onCitySelected = {}
-            )
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchToolbar(
     searchText: String,
+    isFavoritesFilter: Boolean,
     onSearchTextChanged: (String) -> Unit,
-    onFilterClicked: () -> Unit
+    onFilterClicked: (Boolean) -> Unit
 ) {
+    var openFilterDialog by remember { mutableStateOf(false) }
+
     CenterAlignedTopAppBar(
         modifier = Modifier
             .fillMaxWidth()
@@ -133,7 +71,10 @@ fun SearchToolbar(
             SearchBar(
                 searchText = searchText,
                 onSearchTextChanged = onSearchTextChanged,
-                onFilterClicked = onFilterClicked
+                isFavoritesFilter = isFavoritesFilter,
+                onFilterClicked = {
+                    openFilterDialog = true
+                }
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -141,15 +82,42 @@ fun SearchToolbar(
             titleContentColor = Color.White
         )
     )
+
+    if (openFilterDialog) {
+        ConfirmDialog(
+            title = stringResource(R.string.default_dialog_title),
+            description = stringResource(
+                if (isFavoritesFilter) {
+                    R.string.filter_dialog_disable_text
+                } else {
+                    R.string.filter_dialog_enable_text
+                }
+            ),
+            confirmButtonText = stringResource(
+                if (isFavoritesFilter) {
+                    R.string.filter_dialog_disable
+                } else {
+                    R.string.filter_dialog_enable
+                }
+            ),
+            dismissButtonText = stringResource(R.string.filter_dialog_close),
+            onConfirm = {
+                onFilterClicked(isFavoritesFilter.not())
+                openFilterDialog = false
+            },
+            onDismiss = { openFilterDialog = false }
+        )
+    }
 }
 
 @Composable
 fun SearchBar(
     searchText: String,
+    isFavoritesFilter: Boolean,
     onSearchTextChanged: (String) -> Unit,
     onFilterClicked: () -> Unit
 ) {
-    var isTextPresent by remember { mutableStateOf(searchText.isNotEmpty()) }
+    var isTextPresent by rememberSaveable { mutableStateOf(searchText.isNotEmpty()) }
 
     OutlinedTextField(
         value = searchText,
@@ -196,7 +164,7 @@ fun SearchBar(
                             stringResource(
                                 id = R.string.toolbar_content_description_filter_icon
                             ),
-                        tint = Color.Gray
+                        tint = if (isFavoritesFilter) Color.Blue else Color.Gray
                     )
                 }
             }
@@ -214,166 +182,6 @@ fun SearchBar(
             disabledIndicatorColor = Color.Gray
         ),
     )
-}
-
-@Composable
-fun CitiesList(
-    cities: LazyPagingItems<CityModel>,
-    isFavoritesFilter: Boolean,
-    navigateToMap: (CityModel) -> Unit,
-    onCitySelected: (CityModel) -> Unit
-) {
-    val lazyColumnListState = rememberLazyListState()
-
-    var showCityDialog by remember { mutableStateOf(false) }
-    var citySelected by remember { mutableStateOf(CityModel()) }
-
-    LaunchedEffect(key1 = cities.loadState) {
-        lazyColumnListState.animateScrollToItem(0)
-    }
-
-    LazyColumn(
-        state = lazyColumnListState,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        contentPadding = PaddingValues(dimensionResource(id = R.dimen.size_16dp))
-    ) {
-        items(
-            cities.itemCount,
-            key = { cities[it]?.id ?: 0 },
-        ) {
-            cities[it]?.let { city ->
-                CityItem(
-                    cityModel = city,
-                    onFavoriteClick = {},
-                    onCitySelected = { citySelected -> navigateToMap(citySelected) },
-                    onCityViewSelected = {
-                        citySelected = city
-                        onCitySelected(city)
-                        showCityDialog = true
-                    }
-                )
-            }
-        }
-    }
-
-    if (showCityDialog){
-        CityDetailDialog(
-            city = citySelected,
-            onDismissRequest = {
-                showCityDialog = false
-            }
-        )
-    }
-}
-
-@Composable
-fun CityItem(
-    cityModel: CityModel,
-    onFavoriteClick: (CityModel) -> Unit,
-    onCitySelected: (CityModel) -> Unit,
-    onCityViewSelected: (CityModel) -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = dimensionResource(id = R.dimen.size_6dp))
-            .clickable { onCitySelected(cityModel) },
-        shape = RoundedCornerShape(
-            dimensionResource(id = R.dimen.size_12dp)
-        ),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = dimensionResource(id = R.dimen.size_2dp)
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimensionResource(id = R.dimen.size_16dp)),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = cityModel.name ?: String(),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = cityModel.country,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.size_4dp)))
-                Text(
-                    text = stringResource(
-                        id = R.string.city_item_latitude_and_longitude,
-                        cityModel.lat,
-                        cityModel.lon
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray
-                )
-            }
-
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
-                IconButton(onClick = {
-                    cityModel.isFavorite = cityModel.isFavorite?.not() ?: false
-                    onFavoriteClick(cityModel)
-                }) {
-                    Icon(
-                        imageVector =
-                            if (cityModel.isFavorite == true) {
-                                Icons.Default.Favorite
-                            } else {
-                                Icons.Default.FavoriteBorder
-                            },
-                        contentDescription = stringResource(
-                            if (cityModel.isFavorite == true) {
-                                R.string.city_item_content_description_delete_favorites
-                            } else {
-                                R.string.city_item_content_description_add_favorites
-                            }
-                        ),
-                        tint = if (cityModel.isFavorite == true) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                        modifier = Modifier.size(
-                            dimensionResource(id = R.dimen.size_28dp)
-                        )
-                    )
-                }
-
-                Spacer(
-                    modifier = Modifier.height(
-                        dimensionResource(id = R.dimen.size_8dp)
-                    )
-                )
-
-                Button(
-                    onClick = { onCityViewSelected(cityModel) },
-                    modifier = Modifier.width(dimensionResource(id = R.dimen.size_90dp)),
-                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.size_8dp)),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    )
-                ) {
-                    Text(
-                        text = stringResource(R.string.city_item_btn_see),
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        }
-    }
 }
 
 @Composable
@@ -426,11 +234,44 @@ fun CityDetailDialog(
                     contentScale = ContentScale.Fit
                 )
 
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = dimensionResource(id = R.dimen.size_16dp)),
+                    contentAlignment = Alignment.TopEnd
+                ) {
+                    Icon(
+                        imageVector =
+                            if (city.isFavorite == true) {
+                                Icons.Default.Favorite
+                            } else {
+                                Icons.Default.FavoriteBorder
+                            },
+                        contentDescription =
+                            stringResource(
+                                if (city.isFavorite == true) {
+                                    R.string.city_item_content_description_delete_favorites
+                                } else {
+                                    R.string.city_item_content_description_add_favorites
+                                }
+                            ),
+                        tint =
+                            if (city.isFavorite == true) {
+                                Color.DarkGray
+                            } else {
+                                Color.Gray
+                            },
+                        modifier = Modifier.size(
+                            dimensionResource(id = R.dimen.size_28dp)
+                        )
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.size_16dp)))
 
                 Text(
-                    modifier = Modifier.padding(horizontal =
-                        dimensionResource(id = R.dimen.size_16dp)
+                    modifier = Modifier.padding(
+                        horizontal = dimensionResource(id = R.dimen.size_16dp)
                     ),
                     text = stringResource(id = R.string.city_item_city_name),
                     style = MaterialTheme.typography.titleMedium,
@@ -497,74 +338,44 @@ fun CityDetailDialog(
 
 @Preview(showBackground = true)
 @Composable
-fun SearchToolbarPreview() {
+private fun SearchToolbarPreview() {
     MaterialTheme {
         SearchToolbar(
             searchText = String(),
+            isFavoritesFilter = false,
             onSearchTextChanged = { },
             onFilterClicked = { }
         )
     }
 }
 
-@Preview(showBackground = true)
 @Composable
-fun CityItemPreview() {
-    MyCitiesSearchTheme {
-        CityItem(
-            cityModel = CityModel(
-                id = 1,
-                name = "City A",
-                country = "Country A",
-                isFavorite = false,
-                lon = 106.200000,
-                lat = 36.160000
-            ),
-            onFavoriteClick = {},
-            onCitySelected = {},
-            onCityViewSelected = {}
-        )
-    }
+fun ConfirmDialog(
+    title: String,
+    description: String,
+    confirmButtonText: String,
+    dismissButtonText: String,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = {
+            onDismiss()
+        },
+        title = { Text(text = title) },
+        text = { Text(text = description) },
+        confirmButton = {
+            TextButton(onClick = { onConfirm() }) { Text(confirmButtonText) }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) { Text(dismissButtonText) }
+        },
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun CitiesListScreenPreview() {
-    val cities =
-        listOf(
-            CityModel(
-                id = 1,
-                name = "City A",
-                country = "Country A",
-                isFavorite = false,
-                lon = 106.232341,
-                lat = 36.167531
-            ),
-            CityModel(
-                id = 2,
-                name = "City B",
-                country = "Country B",
-                isFavorite = true,
-                lon = 1.0,
-                lat = 1.0
-            )
-        )
-
-    MyCitiesSearchTheme {
-        CitiesListScreen(
-            cities = flowOf(PagingData.from(cities)).collectAsLazyPagingItems(),
-            searchText = "",
-            isFavoritesFilter = true,
-            onSearchTextChanged = {},
-            navigateToMap = { },
-            onFilterClicked = {}
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CityDetailDialogPreview() {
+private fun CityDetailDialogPreview() {
     MyCitiesSearchTheme {
         CityDetailDialog(
             CityModel(
@@ -579,5 +390,3 @@ fun CityDetailDialogPreview() {
         )
     }
 }
-
-

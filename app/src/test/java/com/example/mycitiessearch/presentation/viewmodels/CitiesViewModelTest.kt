@@ -94,4 +94,20 @@ class CitiesViewModelTest {
         }
         confirmVerified(citiesUseCaseMock)
     }
+
+    @Test
+    fun updateCityTest(): Unit = runBlocking {
+        val city =  mockk<CityModel>(relaxed = true)
+
+        coEvery {
+            citiesUseCaseMock.updateCity(city)
+        } returns Unit
+
+        viewModel.updateCity(city)
+
+        coVerify {
+            citiesUseCaseMock.updateCity(city)
+        }
+        confirmVerified(citiesUseCaseMock)
+    }
 }

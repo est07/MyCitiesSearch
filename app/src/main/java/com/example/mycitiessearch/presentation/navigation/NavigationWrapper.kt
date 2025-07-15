@@ -6,8 +6,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.mycitiessearch.domain.models.CityModel
-import com.example.mycitiessearch.presentation.CitiesMapScreen
-import com.example.mycitiessearch.presentation.CitiesRoute
+import com.example.mycitiessearch.presentation.compose.CitiesMapScreen
+import com.example.mycitiessearch.presentation.compose.CitiesRoute
 import com.example.mycitiessearch.presentation.navigation.type.createNavType
 import com.example.mycitiessearch.presentation.viewmodels.CitiesViewModel
 import kotlin.reflect.typeOf

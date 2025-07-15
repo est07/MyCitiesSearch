@@ -22,7 +22,6 @@ class CitiesUseCaseTest {
 
     private lateinit var citiesUseCase: CitiesUseCase
 
-
     @Before
     fun setUp() {
         citiesUseCase = CitiesUseCase(
@@ -154,7 +153,7 @@ class CitiesUseCaseTest {
     }
 
     @Test
-    fun getAllFavoritesCities(): Unit = runBlocking {
+    fun getAllFavoritesCitiesTest(): Unit = runBlocking {
         val cities =  mockk<List<CityModel>>(relaxed = true)
 
         coEvery {
@@ -171,6 +170,22 @@ class CitiesUseCaseTest {
 
         coVerify {
             citiesRepository.getAllFavoritesCities(limit = 5, offset = 0)
+        }
+        confirmVerified(citiesRepository)
+    }
+
+    @Test
+    fun updateCityTest(): Unit = runBlocking {
+        val city =  mockk<CityModel>(relaxed = true)
+
+        coEvery {
+            citiesRepository.updateCity(city.toDatabase())
+        } returns Unit
+
+        citiesUseCase.updateCity(city)
+
+        coVerify {
+            citiesRepository.updateCity(city.toDatabase())
         }
         confirmVerified(citiesRepository)
     }

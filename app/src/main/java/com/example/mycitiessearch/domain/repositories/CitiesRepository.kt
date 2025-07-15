@@ -16,4 +16,6 @@ interface CitiesRepository {
     suspend fun getCitiesSearch(query: String, limit: Int, offset: Int): List<CityModel>
 
     suspend fun getAllFavoritesCities(limit: Int, offset: Int): List<CityModel>
+
+    suspend fun updateCity(city: CityEntity)
 }
