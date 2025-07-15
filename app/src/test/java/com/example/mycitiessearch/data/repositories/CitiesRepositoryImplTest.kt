@@ -135,7 +135,7 @@ class CitiesRepositoryImplTest {
 
 
     @Test
-    fun getCitiesSearch(): Unit = runBlocking {
+    fun getCitiesSearchTest(): Unit = runBlocking {
 
         val cities =  mockk<List<CityEntity>>(relaxed = true)
 
@@ -158,7 +158,7 @@ class CitiesRepositoryImplTest {
     }
 
     @Test
-    fun allFavoritesCities(): Unit = runBlocking {
+    fun allFavoritesCitiesTest(): Unit = runBlocking {
 
         val cities =  mockk<List<CityEntity>>(relaxed = true)
 
@@ -176,6 +176,31 @@ class CitiesRepositoryImplTest {
 
         coVerify { citiesDao.getAllFavoritesCities(limit = 5, offset = 0) }
 
+        confirmVerified(citiesDao)
+    }
+
+    @Test
+    fun updateCityTest() = runBlocking {
+        val city =
+            CityEntity(
+                id = 1,
+                name = "Test City",
+                country = "Test Country",
+                isFavorite = false,
+                lat = 0.0,
+                lon = 0.0
+            )
+
+        coEvery {
+            citiesDao.updateCity(city)
+        } returns Unit
+
+        val updateCityDB = citiesRepositoryImpl.updateCity(city)
+
+        assertEquals(Unit , updateCityDB)
+        coVerify {
+            citiesDao.updateCity(city)
+        }
         confirmVerified(citiesDao)
     }
 }

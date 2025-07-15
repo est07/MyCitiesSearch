@@ -140,7 +140,7 @@ fun ErrorView(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewCenteredCircularLoading() {
+private fun PreviewCenteredCircularLoading() {
     MaterialTheme {
         LoadingScreen()
     }
@@ -148,7 +148,7 @@ fun PreviewCenteredCircularLoading() {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewErrorView() {
+private fun PreviewErrorView() {
     MaterialTheme {
         ErrorView(
             onRetryClick = {}

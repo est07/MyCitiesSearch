@@ -1,4 +1,4 @@
-package com.example.mycitiessearch.presentation
+package com.example.mycitiessearch.presentation.compose
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

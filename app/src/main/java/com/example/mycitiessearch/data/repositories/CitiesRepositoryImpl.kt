@@ -2,6 +2,7 @@ package com.example.mycitiessearch.data.repositories
 
 import com.example.mycitiessearch.data.database.dao.CitiesDao
 import com.example.mycitiessearch.data.database.entities.CityEntity
+import com.example.mycitiessearch.data.database.entities.toDatabase
 import com.example.mycitiessearch.data.network.apis.CitiesApi
 import com.example.mycitiessearch.domain.models.CityModel
 import com.example.mycitiessearch.domain.models.toDomain
@@ -38,7 +39,10 @@ class CitiesRepositoryImpl(
         citiesDao.getCitiesSearch(query = query, limit = limit, offset = offset)
             .map { it.toDomain() }
 
-
     override suspend fun getAllFavoritesCities(limit: Int, offset: Int): List<CityModel> =
         citiesDao.getAllFavoritesCities(limit = limit, offset = offset).map { it.toDomain() }
+
+    override suspend fun updateCity(city: CityEntity) {
+        citiesDao.updateCity(city)
+    }
 }
