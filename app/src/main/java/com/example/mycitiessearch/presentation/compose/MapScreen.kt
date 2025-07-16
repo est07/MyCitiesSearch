@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,12 +28,17 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 private const val DEFAULT_MAP_ZOOM = 15f
 private const val DEFAULT_MAX_LINES = 1
+private const val INVALID_CITY_ID = 0
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CitiesMapScreen(city: CityModel, navigateBack: () -> Unit) {
+fun CitiesMapScreen(
+    modifier: Modifier = Modifier,
+    city: CityModel,
+    navigateBack: () -> Unit
+) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -68,23 +74,33 @@ fun CitiesMapScreen(city: CityModel, navigateBack: () -> Unit) {
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun GoogleMapsScreen(modifier: Modifier = Modifier, city: CityModel) {
-
     val marker = LatLng(city.lat, city.lon)
+
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(marker, DEFAULT_MAP_ZOOM)
     }
 
+    LaunchedEffect(city) {
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(marker, DEFAULT_MAP_ZOOM)
+    }
+
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = cameraPositionState
+        cameraPositionState =
+            if (city.id != INVALID_CITY_ID) {
+                cameraPositionState
+            } else {
+                rememberCameraPositionState()
+            }
     ) {
-        Marker(
-            state = MarkerState(position = marker),
-            title = city.name, snippet = city.country
-        )
+        if (city.id != INVALID_CITY_ID) {
+            Marker(
+                state = MarkerState(position = marker),
+                title = city.name, snippet = city.country
+            )
+        }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

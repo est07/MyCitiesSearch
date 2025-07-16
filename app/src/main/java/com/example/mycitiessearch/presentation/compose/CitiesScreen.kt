@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,32 +54,123 @@ import kotlinx.coroutines.flow.flowOf
 
 private const val DEFAULT_LIST_INDEX = 0
 private const val DEFAULT_WEIGHT = 1f
+private const val DEFAULT_LANDSCAPE_WEIGHT = 0.5f
 
 @Composable
 fun CitiesRoute(citiesViewModel: CitiesViewModel, navigateToMap : (CityModel) -> Unit) {
     val citiesDB = citiesViewModel.getLocalCities.collectAsLazyPagingItems()
 
+    val configuration = LocalConfiguration.current
+    val orientation = configuration.orientation
+
+    if (orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+        LandscapeScreen(
+            cities = citiesDB,
+            searchText = citiesViewModel.textQuery,
+            isFavoritesFilter = citiesViewModel.isFavoritesFilter,
+            onSearchTextChanged = {
+                citiesViewModel.textQuery = it
+                citiesViewModel.clearCitiesPagingSource()
+            },
+            onFilterClicked = {
+                citiesViewModel.isFavoritesFilter = it
+                citiesViewModel.clearCitiesPagingSource()
+            },
+            onFavoriteSelected = {
+                citiesViewModel.updateCity(it)
+            }
+        )
+    } else {
+        PortraitScreen(
+            cities = citiesDB,
+            searchText = citiesViewModel.textQuery,
+            isFavoritesFilter = citiesViewModel.isFavoritesFilter,
+            onSearchTextChanged = {
+                citiesViewModel.textQuery = it
+                citiesViewModel.clearCitiesPagingSource()
+            },
+            navigateToMap = { navigateToMap(it) },
+            onFilterClicked = {
+                citiesViewModel.isFavoritesFilter = it
+                citiesViewModel.clearCitiesPagingSource()
+            },
+            onFavoriteSelected = {
+                citiesViewModel.updateCity(it)
+            }
+        )
+    }
+}
+
+@Composable
+fun PortraitScreen(
+    cities: LazyPagingItems<CityModel>,
+    searchText: String,
+    isFavoritesFilter: Boolean,
+    onSearchTextChanged: (String) -> Unit,
+    navigateToMap: (CityModel) -> Unit,
+    onFilterClicked: (Boolean) -> Unit,
+    onFavoriteSelected: (CityModel) -> Unit
+) {
     CitiesListScreen(
-        cities = citiesDB,
-        searchText = citiesViewModel.textQuery,
-        isFavoritesFilter = citiesViewModel.isFavoritesFilter,
-        onSearchTextChanged = {
-            citiesViewModel.textQuery = it
-            citiesViewModel.clearCitiesPagingSource()
-        },
-        navigateToMap = { navigateToMap(it) },
-        onFilterClicked = {
-            citiesViewModel.isFavoritesFilter = it
-            citiesViewModel.clearCitiesPagingSource()
-        },
-        onFavoriteSelected = {
-            citiesViewModel.updateCity(it)
-        }
+        modifier = Modifier.fillMaxSize(),
+        cities = cities,
+        searchText = searchText,
+        isFavoritesFilter = isFavoritesFilter,
+        onSearchTextChanged = onSearchTextChanged,
+        navigateToMap = navigateToMap,
+        onFilterClicked = onFilterClicked,
+        onFavoriteSelected = onFavoriteSelected
     )
 }
 
 @Composable
+fun LandscapeScreen(
+    cities: LazyPagingItems<CityModel>,
+    searchText: String,
+    isFavoritesFilter: Boolean,
+    onSearchTextChanged: (String) -> Unit,
+    onFilterClicked: (Boolean) -> Unit,
+    onFavoriteSelected: (CityModel) -> Unit
+) {
+    var citySelected by remember { mutableStateOf(CityModel()) }
+
+    Surface {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            CitiesListScreen(
+                modifier = Modifier
+                    .fillMaxWidth(DEFAULT_LANDSCAPE_WEIGHT)
+                    .fillMaxHeight(),
+                cities = cities,
+                searchText = searchText,
+                isFavoritesFilter = isFavoritesFilter,
+                onSearchTextChanged = onSearchTextChanged,
+                navigateToMap = { citySelected = it },
+                onFilterClicked = onFilterClicked,
+                onFavoriteSelected = onFavoriteSelected
+            )
+
+            Scaffold(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(),
+            ) { innerPadding ->
+                GoogleMapsScreen(
+                    modifier = Modifier
+                        .padding(innerPadding),
+                    city = citySelected
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun CitiesListScreen(
+    modifier:Modifier = Modifier,
     cities: LazyPagingItems<CityModel>,
     searchText: String,
     isFavoritesFilter: Boolean,
@@ -86,7 +180,7 @@ fun CitiesListScreen(
     onFavoriteSelected: (CityModel) -> Unit
 ) {
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         topBar = {
             SearchToolbar(
                 searchText = searchText,
@@ -99,8 +193,10 @@ fun CitiesListScreen(
         }
     ) { innerPadding ->
         Column(
-            modifier = Modifier
-                .padding(innerPadding)
+            modifier = Modifier.padding(
+                top = innerPadding.calculateTopPadding(),
+                bottom = innerPadding.calculateBottomPadding()
+            )
         ) {
             CitiesList(
                 cities = cities,
@@ -127,6 +223,7 @@ fun CitiesList(
     }
 
     LazyColumn(
+        modifier = Modifier.fillMaxWidth(),
         state = lazyColumnListState,
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(dimensionResource(id = R.dimen.size_16dp))
@@ -346,6 +443,41 @@ private fun CitiesListScreenPreview() {
             isFavoritesFilter = false,
             onSearchTextChanged = {},
             navigateToMap = {},
+            onFilterClicked = {},
+            onFavoriteSelected = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, device = "spec:parent=pixel_5,orientation=landscape")
+@Composable
+private fun LandscapeCitiesPreview() {
+    val cities =
+        listOf(
+            CityModel(
+                id = 1,
+                name = "City A",
+                country = "Country A",
+                isFavorite = false,
+                lon = 106.232341,
+                lat = 36.167531
+            ),
+            CityModel(
+                id = 2,
+                name = "City B",
+                country = "Country B",
+                isFavorite = true,
+                lon = 1.0,
+                lat = 1.0
+            )
+        )
+
+    MyCitiesSearchTheme {
+        LandscapeScreen(
+            cities = flowOf(PagingData.from(cities)).collectAsLazyPagingItems(),
+            searchText = "",
+            isFavoritesFilter = false,
+            onSearchTextChanged = {},
             onFilterClicked = {},
             onFavoriteSelected = {}
         )
