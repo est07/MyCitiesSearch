@@ -1,14 +1,17 @@
 <resources>
     <string name="app_name">MyCitiesSearch</string>
+    <string name="google_maps_key">Google_Maps_Key</string>
 
     <string name="response_error.network_error">Network error</string>
     <string name="response_error.btn_retry">Try again</string>
     <string name="response_error.content_description.error_network_icon">"Error icon"</string>
 
     <string name="toolbar.placeholder">Search</string>
+    <string name="map_toolbar.title">"City Map View"</string>
     <string name="toolbar.content_description.search_icon">Search Icon</string>
     <string name="toolbar.content_description.clear_icon">Clear Icon</string>
     <string name="toolbar.content_description.filter_icon">Filter Icon</string>
+    <string name="map_toolbar.placeholder.back_icon">Back Icon</string>
 
     <string name="city_item.city_name">Ciudad:</string>
     <string name="city_item.country">País:</string>

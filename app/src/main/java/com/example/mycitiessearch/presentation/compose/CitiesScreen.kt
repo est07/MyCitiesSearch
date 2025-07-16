@@ -351,5 +351,3 @@ private fun CitiesListScreenPreview() {
         )
     }
 }
-
-
