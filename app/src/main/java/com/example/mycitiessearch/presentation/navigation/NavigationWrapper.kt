@@ -27,7 +27,10 @@ fun NavigationWrapper(citiesViewModel: CitiesViewModel) {
             typeMap = mapOf(typeOf<CityModel>() to createNavType<CityModel>())
         ) { navBackStackEntry ->
             val mapData: MapScreen = navBackStackEntry.toRoute()
-            CitiesMapScreen(city = mapData.city)
+            CitiesMapScreen(
+                city = mapData.city,
+                navigateBack = { navController.popBackStack() }
+            )
         }
     }
 }

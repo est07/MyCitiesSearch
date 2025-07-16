@@ -95,6 +95,8 @@ dependencies {
     implementation(libs.androidx.room.runtime.android)
     ksp(libs.room.compiler)
     implementation(libs.paging.compose)
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
