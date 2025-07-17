@@ -64,11 +64,23 @@ el cual estaba organizado en los diferentes estados en los que puede estar una t
 
 ## Preview
 
+![MainView](https://github.com/est07/MyCitiesSearch/blob/feature/clean-project/images/main_view.gif)
+
+![FavoritesFilter](https://github.com/est07/MyCitiesSearch/blob/feature/clean-project/images/favorites_filter.gif)
+
+![MapView](https://github.com/est07/MyCitiesSearch/blob/feature/clean-project/images/map_view.gif)
+
+![ErrorView](https://github.com/est07/MyCitiesSearch/blob/feature/clean-project/images/map_view.gif)
+
+![LadscapeView](https://github.com/est07/MyCitiesSearch/blob/feature/clean-project/images/landscape_view.gif)
+
 ## Resources:
 - https://developer.android.com/develop/ui/compose/components/search-bar?hl=es-419
 - https://m3.material.io/
 - https://developer.android.com/topic/libraries/architecture/paging/v3-network-db?hl=es-419
 - https://developer.android.com/courses/pathways/jetpack-compose-for-android-developers-4?hl=es-419
+- https://developers.google.com/maps/documentation/android-sdk?hl=es-419
 - https://developers.google.com/maps/documentation/android-sdk/maps-compose?hl=es-419
+- https://medium.com/@janand1991/mastering-device-orientation-detection-in-jetpack-compose-7bedf4679e9b
 - https://mockk.io/
 - https://developer.android.com/develop/ui/compose/testing?hl=es-419
