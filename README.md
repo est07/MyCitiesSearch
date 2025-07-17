@@ -45,15 +45,30 @@ En el package de presentation se encuentran todos los componentes que son utiliz
 Todas las tareas desarrolladas en el proyecto se organizaron utilizando GitHub Projects y el board utilizado fue [Board](https://github.com/users/est07/projects/1/views/1)
 el cual estaba organizado en los diferentes estados en los que puede estar una tarea durante el desarrollo de un proyecto.
 
+![Board](https://github.com/est07/MyCitiesSearch/blob/feature/clean-project/images/screenshot_board.png)
+
 ## Getting Started
 1. Clonar el repositorio
 2. Abrir the project en Android Studio
 3. En el archivo local.properties, agregar la URL suministrada para la prueba, para descargar el .json sin el cities.json al final de la URL, de la siguiente forma:
  `JSON_URL_API=https://gist.githubusercontent.com/hernan-uala/{your_key}/raw/{your_key}/`
+
+![LoacalProperties](https://github.com/est07/MyCitiesSearch/blob/feature/clean-project/images/screenshot_local.properties.png)
+
 4. En el archivo strings.xml, agregar una Google_Maps_Key válida para poder visualizar el mapa en el string google_maps_key, de la siguiente forma:
- `<string name="google_maps_key">your_google_maps_key</string>`  
+ `<string name="google_maps_key">your_google_maps_key</string>`
+
+![LoacalProperties](https://github.com/est07/MyCitiesSearch/blob/feature/clean-project/images/screenshot_strings.png)
+
 5. Build and run la aplicacion
 
 ## Preview
 
 ## Resources:
+- https://developer.android.com/develop/ui/compose/components/search-bar?hl=es-419
+- https://m3.material.io/
+- https://developer.android.com/topic/libraries/architecture/paging/v3-network-db?hl=es-419
+- https://developer.android.com/courses/pathways/jetpack-compose-for-android-developers-4?hl=es-419
+- https://developers.google.com/maps/documentation/android-sdk/maps-compose?hl=es-419
+- https://mockk.io/
+- https://developer.android.com/develop/ui/compose/testing?hl=es-419
