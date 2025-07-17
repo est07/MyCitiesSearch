@@ -49,7 +49,7 @@ el cual estaba organizado en los diferentes estados en los que puede estar una t
 
 ## Getting Started
 1. Clonar el repositorio
-2. Abrir the project en Android Studio
+2. Abrir el proyecto en Android Studio
 3. En el archivo local.properties, agregar la URL suministrada para la prueba, para descargar el .json sin el cities.json al final de la URL, de la siguiente forma:
  `JSON_URL_API=https://gist.githubusercontent.com/hernan-uala/{your_key}/raw/{your_key}/`
 
@@ -60,7 +60,7 @@ el cual estaba organizado en los diferentes estados en los que puede estar una t
 
 ![LoacalProperties](https://github.com/est07/MyCitiesSearch/blob/main/images/screenshot_strings.png)
 
-5. Build and run la aplicacion
+5. Build and run the application
 
 ## Preview
 
