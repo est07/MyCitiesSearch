@@ -39,8 +39,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.paging.PagingData
@@ -51,6 +54,14 @@ import com.example.mycitiessearch.domain.models.CityModel
 import com.example.mycitiessearch.presentation.ui.theme.MyCitiesSearchTheme
 import com.example.mycitiessearch.presentation.viewmodels.CitiesViewModel
 import kotlinx.coroutines.flow.flowOf
+
+private const val CITY_ITEM_TAG = "CityItem"
+private const val CITY_ITEM_FAVORITE_ICON_TAG = "CityItemFavoriteIcon"
+private const val CITY_ITEM_CITY_TEXT_TAG = "CityItemCityText"
+private const val CITY_ITEM_COUNTRY_TEXT_TAG = "CityItemCountryText"
+private const val CITY_ITEM_LAT_AND_LONG_TEXT_TAG = "CityItemLatAndLongText"
+private const val CITY_ITEM_SEE_BUTTON_TAG = "CityItemSeeButton"
+private const val CITY_ITEM_SEE_BUTTON_TEXT_TAG = "CityItemSeeButtonText"
 
 private const val DEFAULT_LIST_INDEX = 0
 private const val DEFAULT_WEIGHT = 1f
@@ -155,6 +166,7 @@ fun LandscapeScreen(
 
             Scaffold(
                 modifier = Modifier
+                    .semantics { testTagsAsResourceId = true }
                     .fillMaxWidth()
                     .fillMaxHeight(),
             ) { innerPadding ->
@@ -180,7 +192,8 @@ fun CitiesListScreen(
     onFavoriteSelected: (CityModel) -> Unit
 ) {
     Scaffold(
-        modifier = modifier,
+        modifier = modifier
+            .semantics { testTagsAsResourceId = true },
         topBar = {
             SearchToolbar(
                 searchText = searchText,
@@ -271,7 +284,8 @@ fun CityItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = dimensionResource(id = R.dimen.size_6dp))
-            .clickable { onCitySelected(cityModel) },
+            .clickable { onCitySelected(cityModel) }
+            .testTag(CITY_ITEM_TAG),
         shape = RoundedCornerShape(
             dimensionResource(id = R.dimen.size_12dp)
         ),
@@ -291,11 +305,13 @@ fun CityItem(
         ) {
             Column(modifier = Modifier.weight(DEFAULT_WEIGHT)) {
                 Text(
+                    modifier = Modifier.testTag(CITY_ITEM_CITY_TEXT_TAG),
                     text = cityModel.name ?: String(),
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
+                    modifier = Modifier.testTag(CITY_ITEM_COUNTRY_TEXT_TAG),
                     text = cityModel.country,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
@@ -303,6 +319,7 @@ fun CityItem(
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.size_4dp)))
                 Text(
+                    modifier = Modifier.testTag(CITY_ITEM_LAT_AND_LONG_TEXT_TAG),
                     text = stringResource(
                         id = R.string.city_item_latitude_and_longitude,
                         cityModel.lat,
@@ -316,9 +333,12 @@ fun CityItem(
             Column(
                 horizontalAlignment = Alignment.End
             ) {
-                IconButton(onClick = {
-                    openFavoritesDialog = true
-                }) {
+                IconButton(
+                    modifier = Modifier.testTag(CITY_ITEM_FAVORITE_ICON_TAG),
+                    onClick = {
+                        openFavoritesDialog = true
+                    }
+                ) {
                     Icon(
                         imageVector =
                             if (cityModel.isFavorite == true) {
@@ -354,13 +374,16 @@ fun CityItem(
 
                 Button(
                     onClick = { onCityViewSelected(cityModel) },
-                    modifier = Modifier.width(dimensionResource(id = R.dimen.size_90dp)),
+                    modifier = Modifier
+                        .width(dimensionResource(id = R.dimen.size_90dp))
+                        .testTag(CITY_ITEM_SEE_BUTTON_TAG),
                     shape = RoundedCornerShape(dimensionResource(id = R.dimen.size_8dp)),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
                     Text(
+                        modifier = Modifier.testTag(CITY_ITEM_SEE_BUTTON_TEXT_TAG),
                         text = stringResource(R.string.city_item_btn_see),
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.bodyMedium
@@ -374,7 +397,7 @@ fun CityItem(
         ConfirmDialog(
             title = stringResource(R.string.default_dialog_title),
             description = stringResource(
-                if (openFavoritesDialog) {
+                if (cityModel.isFavorite == true) {
                     R.string.favorite_dialog_disable_text
                 } else {
                     R.string.favorite_dialog_enable_text

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -54,6 +56,23 @@ import androidx.compose.ui.window.Dialog
 import com.example.mycitiessearch.R
 import com.example.mycitiessearch.domain.models.CityModel
 import com.example.mycitiessearch.presentation.ui.theme.MyCitiesSearchTheme
+
+private const val CITY_TOOLBAR_TAG = "MapToolbarTitle"
+private const val CITY_TOOLBAR_SEARCH_TITLE_TAG = "CityToolbarSearchTitle"
+private const val CITY_TOOLBAR_SEARCH_ICON_TAG = "CityToolbarSearchIcon"
+private const val CITY_TOOLBAR_FILTER_ICON_TAG = "CityToolbarFilterIcon"
+private const val CITY_TOOLBAR_CLEAR_ICON_TAG = "CityToolbarClearIcon"
+private const val CITY_DETAIL_DIALOG_TAG = "CityDetailDialog"
+private const val CITY_DETAIL_DIALOG_CLOSE_ICON_TAG = "CityDetailDialogCloseIcon"
+private const val CITY_DETAIL_DIALOG_CITY_ICON_TAG = "CityDetailDialogCityIcon"
+private const val CITY_DETAIL_DIALOG_FAVORITE_ICON_TAG = "CityDetailDialogFavoriteIcon"
+private const val CITY_DETAIL_DIALOG_CITY_TITLE_TAG = "CityDetailDialogCityTitle"
+private const val CITY_DETAIL_DIALOG_CITY_TEXT_TAG = "CityDetailDialogCityText"
+private const val CITY_DETAIL_DIALOG_COUNTRY_TITLE_TAG = "CityDetailDialogCountryTitle"
+private const val CITY_DETAIL_DIALOG_COUNTRY_TEXT_TAG = "CityDetailDialogCountryText"
+private const val CITY_DETAIL_DIALOG_LAT_TITLE_TAG = "CityDetailDialogLatTitle"
+private const val CITY_DETAIL_DIALOG_LONG_TITLE_TAG = "CityDetailDialogLongTitle"
+private const val CITY_ALERT_DIALOG_TAG = "CityAlertDialog"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,7 +87,8 @@ fun SearchToolbar(
     CenterAlignedTopAppBar(
         modifier = Modifier
             .fillMaxWidth()
-            .height(dimensionResource(id = R.dimen.size_110dp)),
+            .height(dimensionResource(id = R.dimen.size_110dp))
+            .testTag(CITY_TOOLBAR_TAG),
         title = {
             SearchBar(
                 searchText = searchText,
@@ -128,13 +148,15 @@ fun SearchBar(
             isTextPresent = it.isNotEmpty()
         },
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(
                 vertical = dimensionResource(id = R.dimen.size_8dp),
                 horizontal = dimensionResource(id = R.dimen.size_4dp)
-            ),
+            )
+            .testTag(CITY_TOOLBAR_SEARCH_TITLE_TAG),
         leadingIcon = {
             Icon(
+                modifier = Modifier.testTag(CITY_TOOLBAR_SEARCH_ICON_TAG),
                 imageVector = Icons.Filled.Search,
                 contentDescription = stringResource(
                     R.string.toolbar_content_description_search_icon
@@ -142,13 +164,17 @@ fun SearchBar(
                 tint = Color.Gray
             )
         },
+        textStyle = MaterialTheme.typography.titleMedium,
         trailingIcon = {
             Row {
                 if (isTextPresent) {
-                    IconButton(onClick = {
-                        onSearchTextChanged(String())
-                        isTextPresent = false
-                    }) {
+                    IconButton(
+                        modifier = Modifier.testTag(CITY_TOOLBAR_CLEAR_ICON_TAG),
+                        onClick = {
+                            onSearchTextChanged(String())
+                            isTextPresent = false
+                        }
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Clear,
                             contentDescription =
@@ -159,7 +185,10 @@ fun SearchBar(
                         )
                     }
                 }
-                IconButton(onClick = onFilterClicked) {
+                IconButton(
+                    modifier = Modifier.testTag(CITY_TOOLBAR_FILTER_ICON_TAG),
+                    onClick = onFilterClicked
+                ) {
                     Icon(
                         painter = painterResource(id = R.drawable.icon_filter_list_24),
                         contentDescription =
@@ -175,7 +204,8 @@ fun SearchBar(
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Next
         ),
-        placeholder = { Text(stringResource(R.string.toolbar_placeholder)) },
+        placeholder = {
+            Text(stringResource(R.string.toolbar_placeholder)) },
         singleLine = true,
         shape = MaterialTheme.shapes.medium,
         colors = TextFieldDefaults.colors(
@@ -196,6 +226,7 @@ fun CityDetailDialog(
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
             modifier = Modifier
+                .testTag(CITY_DETAIL_DIALOG_TAG)
                 .fillMaxWidth()
                 .padding(
                     dimensionResource(id = R.dimen.size_16dp)
@@ -215,7 +246,10 @@ fun CityDetailDialog(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.TopEnd
                 ) {
-                    IconButton(onClick = onDismissRequest) {
+                    IconButton(
+                        modifier = Modifier.testTag(CITY_DETAIL_DIALOG_CLOSE_ICON_TAG),
+                        onClick = onDismissRequest
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Close,
                             contentDescription =
@@ -235,7 +269,8 @@ fun CityDetailDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(dimensionResource(id = R.dimen.size_150dp))
-                        .clip(RoundedCornerShape(dimensionResource(id = R.dimen.size_8dp))),
+                        .clip(RoundedCornerShape(dimensionResource(id = R.dimen.size_8dp)))
+                        .testTag(CITY_DETAIL_DIALOG_CITY_ICON_TAG),
                     contentScale = ContentScale.Fit
                 )
 
@@ -266,9 +301,9 @@ fun CityDetailDialog(
                             } else {
                                 Color.Gray
                             },
-                        modifier = Modifier.size(
-                            dimensionResource(id = R.dimen.size_28dp)
-                        )
+                        modifier = Modifier
+                            .size(dimensionResource(id = R.dimen.size_28dp))
+                            .testTag(CITY_DETAIL_DIALOG_FAVORITE_ICON_TAG)
                     )
                 }
 
@@ -277,7 +312,7 @@ fun CityDetailDialog(
                 Text(
                     modifier = Modifier.padding(
                         horizontal = dimensionResource(id = R.dimen.size_16dp)
-                    ),
+                    ).testTag(CITY_DETAIL_DIALOG_CITY_TITLE_TAG),
                     text = stringResource(id = R.string.city_item_city_name),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Normal,
@@ -286,7 +321,8 @@ fun CityDetailDialog(
 
                 Text(
                     modifier = Modifier
-                        .padding(horizontal = dimensionResource(id = R.dimen.size_16dp)),
+                        .padding(horizontal = dimensionResource(id = R.dimen.size_16dp))
+                        .testTag(CITY_DETAIL_DIALOG_CITY_TEXT_TAG),
                     text = city.name ?: String(),
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
@@ -295,7 +331,8 @@ fun CityDetailDialog(
 
                 Text(
                     modifier = Modifier
-                        .padding(horizontal = dimensionResource(id = R.dimen.size_16dp)),
+                        .padding(horizontal = dimensionResource(id = R.dimen.size_16dp))
+                        .testTag(CITY_DETAIL_DIALOG_COUNTRY_TITLE_TAG),
                     text = stringResource(id = R.string.city_item_country),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Normal,
@@ -304,7 +341,8 @@ fun CityDetailDialog(
 
                 Text(
                     modifier = Modifier
-                        .padding(horizontal = dimensionResource(id = R.dimen.size_16dp)),
+                        .padding(horizontal = dimensionResource(id = R.dimen.size_16dp))
+                        .testTag(CITY_DETAIL_DIALOG_COUNTRY_TEXT_TAG),
                     text = city.country,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
@@ -316,7 +354,7 @@ fun CityDetailDialog(
                 Text(
                     modifier = Modifier.padding(
                         horizontal = dimensionResource(id = R.dimen.size_16dp)
-                    ),
+                    ).testTag(CITY_DETAIL_DIALOG_LAT_TITLE_TAG),
                     text = stringResource(
                         id = R.string.city_item_latitude,
                         city.lat
@@ -328,7 +366,7 @@ fun CityDetailDialog(
                 Text(
                     modifier = Modifier.padding(
                         horizontal = dimensionResource(id = R.dimen.size_16dp)
-                    ),
+                    ).testTag(CITY_DETAIL_DIALOG_LONG_TITLE_TAG),
                     text = stringResource(
                         id = R.string.city_item_longitude,
                         city.lon
@@ -338,19 +376,6 @@ fun CityDetailDialog(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SearchToolbarPreview() {
-    MaterialTheme {
-        SearchToolbar(
-            searchText = String(),
-            isFavoritesFilter = false,
-            onSearchTextChanged = { },
-            onFilterClicked = { }
-        )
     }
 }
 
@@ -364,6 +389,7 @@ fun ConfirmDialog(
     onDismiss: () -> Unit
 ) {
     AlertDialog(
+        modifier = Modifier.testTag(CITY_ALERT_DIALOG_TAG),
         onDismissRequest = {
             onDismiss()
         },
@@ -376,6 +402,19 @@ fun ConfirmDialog(
             TextButton(onClick = { onDismiss() }) { Text(dismissButtonText) }
         },
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SearchToolbarPreview() {
+    MaterialTheme {
+        SearchToolbar(
+            searchText = String(),
+            isFavoritesFilter = false,
+            onSearchTextChanged = { },
+            onFilterClicked = { }
+        )
+    }
 }
 
 @Preview(showBackground = true)
