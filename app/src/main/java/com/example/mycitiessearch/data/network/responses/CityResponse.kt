@@ -1,4 +1,4 @@
-package com.example.mycitiessearch.data.responses
+package com.example.mycitiessearch.data.network.responses
 
 import com.squareup.moshi.Json
 

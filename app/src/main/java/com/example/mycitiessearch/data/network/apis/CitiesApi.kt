@@ -1,6 +1,6 @@
 package com.example.mycitiessearch.data.network.apis
 
-import com.example.mycitiessearch.data.responses.CityResponse
+import com.example.mycitiessearch.data.network.responses.CityResponse
 import retrofit2.http.GET
 
 interface CitiesApi {
