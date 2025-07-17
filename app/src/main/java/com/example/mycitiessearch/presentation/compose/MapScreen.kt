@@ -17,7 +17,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.mycitiessearch.R
 import com.example.mycitiessearch.domain.models.CityModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -30,6 +35,10 @@ private const val DEFAULT_MAP_ZOOM = 15f
 private const val DEFAULT_MAX_LINES = 1
 private const val INVALID_CITY_ID = 0
 
+private const val GOOGLE_MAP_VIEW_TAG = "GoogleMapView"
+private const val MAP_TOOLBAR_TITLE_TAG = "MapToolbarTitle"
+private const val MAP_TOOLBAR_BACK_BUTTON_TAG = "MapToolbarBackButton"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CitiesMapScreen(
@@ -38,20 +47,28 @@ fun CitiesMapScreen(
     navigateBack: () -> Unit
 ) {
     Scaffold(
-        modifier = modifier,
+        modifier = modifier
+            .semantics { testTagsAsResourceId = true },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "City Map View",
+                        modifier = Modifier.testTag(MAP_TOOLBAR_TITLE_TAG),
+                        text = stringResource(R.string.map_toolbar_title),
                         maxLines = DEFAULT_MAX_LINES
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navigateBack()}) {
+                    IconButton(
+                        modifier = Modifier.testTag(MAP_TOOLBAR_BACK_BUTTON_TAG),
+                        onClick = { navigateBack()}) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Localized description"
+                            contentDescription =
+                                stringResource(
+                                    R.string.map_toolbar_content_description_back_icon
+                                ),
+                            tint = Color.White
                         )
                     }
                 },
@@ -85,7 +102,8 @@ fun GoogleMapsScreen(modifier: Modifier = Modifier, city: CityModel) {
     }
 
     GoogleMap(
-        modifier = modifier,
+        modifier = modifier
+            .testTag(GOOGLE_MAP_VIEW_TAG),
         cameraPositionState =
             if (city.id != INVALID_CITY_ID) {
                 cameraPositionState

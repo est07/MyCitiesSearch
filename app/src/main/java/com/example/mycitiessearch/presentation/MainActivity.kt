@@ -23,9 +23,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,6 +39,10 @@ import com.example.mycitiessearch.presentation.ui.theme.MyCitiesSearchTheme
 import com.example.mycitiessearch.presentation.viewmodels.CitiesViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+private const val LOADER_TAG = "LoaderTag"
+private const val NETWORK_IMAGE_ERROR_TAG = "NetworkImageError"
+private const val NETWORK_ERROR_DESCRIPTION_TAG = "NetworkErrorDescription"
+private const val NETWORK_ERROR_BUTTON_TAG = "NetworkErrorButton"
 class MainActivity : ComponentActivity() {
 
     private val citiesViewModel: CitiesViewModel by viewModel()
@@ -45,7 +52,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             citiesViewModel.getCitiesList()
-            MyCitiesSearchTheme {
+            MyCitiesSearchTheme{
                 val getCitiesListService = citiesViewModel.citiesListState.collectAsStateWithLifecycle()
 
                 when (getCitiesListService.value) {
@@ -75,11 +82,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun LoadingScreen() {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .semantics { testTagsAsResourceId = true },
         contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
-            modifier = Modifier.size(dimensionResource(R.dimen.size_56dp)),
+            modifier = Modifier
+                .size(dimensionResource(R.dimen.size_56dp))
+                .testTag(LOADER_TAG),
             color = MaterialTheme.colorScheme.primary,
             strokeWidth = dimensionResource(R.dimen.size_6dp)
         )
@@ -93,7 +104,8 @@ fun ErrorView(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(dimensionResource(R.dimen.size_24dp)),
+            .padding(dimensionResource(R.dimen.size_24dp))
+            .semantics { testTagsAsResourceId = true },
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -104,7 +116,9 @@ fun ErrorView(
                 R.string.response_error_content_description_error_network_icon
             ),
             tint = MaterialTheme.colorScheme.error,
-            modifier = Modifier.size(dimensionResource(R.dimen.size_100dp))
+            modifier = Modifier
+                .size(dimensionResource(R.dimen.size_100dp))
+                .testTag(NETWORK_IMAGE_ERROR_TAG)
         )
 
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.size_24dp)))
@@ -114,7 +128,9 @@ fun ErrorView(
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .testTag(NETWORK_ERROR_DESCRIPTION_TAG)
         )
 
         Spacer(modifier = Modifier.height(dimensionResource(R.dimen.size_32dp)))
@@ -123,7 +139,8 @@ fun ErrorView(
             onClick = onRetryClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(dimensionResource(R.dimen.size_56dp)),
+                .height(dimensionResource(R.dimen.size_56dp))
+                .testTag(NETWORK_ERROR_BUTTON_TAG),
             shape = RoundedCornerShape(dimensionResource(R.dimen.size_12dp)),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary
