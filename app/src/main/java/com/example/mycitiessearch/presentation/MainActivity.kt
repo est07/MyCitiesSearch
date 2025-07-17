@@ -43,6 +43,7 @@ private const val LOADER_TAG = "LoaderTag"
 private const val NETWORK_IMAGE_ERROR_TAG = "NetworkImageError"
 private const val NETWORK_ERROR_DESCRIPTION_TAG = "NetworkErrorDescription"
 private const val NETWORK_ERROR_BUTTON_TAG = "NetworkErrorButton"
+
 class MainActivity : ComponentActivity() {
 
     private val citiesViewModel: CitiesViewModel by viewModel()

@@ -2,7 +2,7 @@ package com.example.mycitiessearch.domain.models
 
 import android.os.Parcelable
 import com.example.mycitiessearch.data.database.entities.CityEntity
-import com.example.mycitiessearch.data.responses.CityResponse
+import com.example.mycitiessearch.data.network.responses.CityResponse
 import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 

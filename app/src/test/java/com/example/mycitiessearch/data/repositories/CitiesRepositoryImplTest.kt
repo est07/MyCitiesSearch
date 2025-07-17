@@ -4,7 +4,7 @@ import com.example.mycitiessearch.data.database.dao.CitiesDao
 import com.example.mycitiessearch.data.database.entities.CityEntity
 import com.example.mycitiessearch.data.database.entities.toDatabase
 import com.example.mycitiessearch.data.network.apis.CitiesApi
-import com.example.mycitiessearch.data.responses.CityResponse
+import com.example.mycitiessearch.data.network.responses.CityResponse
 import com.example.mycitiessearch.domain.models.CityModel
 import com.example.mycitiessearch.domain.models.toDomain
 import io.mockk.coEvery
